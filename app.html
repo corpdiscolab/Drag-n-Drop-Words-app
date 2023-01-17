@@ -1,0 +1,249 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="touch-dnd.js"></script>
+
+
+
+  <link rel="stylesheet" href="https://193.apps.disco.place/disco-style/font-style.css">
+  <link rel="stylesheet" href="https://193.apps.disco.place/disco-style/main-scroll.css">
+  <link rel="stylesheet" href="https://193.apps.disco.place/disco-style/toggler-v1.css">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dnd.css">
+  <title>App</title>
+
+  <script type="text/javascript">
+    var user;
+
+    let parentWindow = {};
+    let status = true
+    var input_words = new Map();
+
+
+    let nowPhrase
+
+
+    let currentState = {}
+
+    window.onload = () => {
+      parentWindow = window.parent || window.top;
+
+      //Init method
+      if (parentWindow) {
+        parentWindow.postMessage(
+          {
+            method: "init",
+            value: [
+              "user_id",
+              "phrase",
+            ],
+          },
+          "*"
+        );
+      }
+    };
+
+    window.addEventListener("message", function (e) {
+
+      if (e.data && e.data.datatype) {
+        switch (e.data.datatype) {
+          case "user_id":
+            // console.log(e.data.payload)
+            user = e.data.payload
+            console.log(user)
+            blurSubsBlock(1)
+            break
+          case "phrase":
+
+            if (status === true) {
+              nowPhrase = e.data.payload
+              let strel = document.getElementById("cont");
+              var block_text = ""
+              block_text += '<div id="block_text" ><div class="block-text" >' + e.data.payload + '</div></div>'
+              block_text += '<div draggable="false" class="droptarget word_set droppable-basket" ondrop="drop2(event)" ondragover="allowDrop(event)" idx="0"></div><br>'
+
+              strel.innerHTML = block_text;
+
+              let words_search = ["to", "on", "from", "at", "in", "for", "of", "with",
+                "by", "a", "the", "that", "this", "these", "those", "my", "his", "her", "your",
+                "yours", "their", "theirs", "an", "our", "and", "or", "as",]
+              input_words = new Map();
+
+              var words_phrase = e.data.payload.split(" ")
+              // console.log(words_phrase)
+              words_phrase.forEach(function (word_phrase, idx, words_phrase) {
+                // console.log(word_phrase)
+                words_search.forEach(function (word, idx, words_search) {
+                  var reg = "\\b" + word + "[`']\\w*|\\b" + word + "\\b"
+                  var wordRegExp = new RegExp(reg, 'i');
+                  let result = $("#block_text").html().match(wordRegExp);
+                  // var pos = $("#block_text").html().indexOf(" " + word + " ");
+                  var count = 0
+                  // while (pos !== -1) {
+                  if (result != null) {
+                    console.log(word)
+                    let htmlInput = `<div class="droptarget droptarget_in droppable" id="droptarget-` + result.index + `" idx="` + result.index + `"></div >`
+                    var replaced = $("#block_text").html().replace(wordRegExp, htmlInput);
+                    input_words.set(result.index, result[0])
+                    count++;
+                    $(".word_set").append('<span class="text-paste word-draggable draggable" draggable="true" id="dragtarget-' + result.index + '" idx="' + result.index + '">' + result[0] + '</span>');
+                    $("#block_text").html(replaced);
+                    // pos = $("#block_text").html().indexOf(" " + word + " ", pos + 1);
+                  }
+                });
+              })
+              initDrag()
+            }
+            break;
+
+        }
+      }
+
+    });
+  </script>
+
+</head>
+
+<body style="color: #fff">
+  <div class="switch-block" id="switcher-blur">
+    <p>Blur</p>
+    <div class="switcher switcher-algo act" data-status="false" id="toggler-blur" title="Blur">
+      <div class="bg">
+        <div class="handle standart-transition"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container block_words noselect" id="cont">
+  </div>
+</body>
+
+</html>
+
+<script>
+
+  // Switcher Event
+  $(document).on("click", "#toggler-blur", function () {
+    $(this).toggleClass("act")
+
+    if ($(this).hasClass("act")) {
+      $(this).attr("data-status", "true")
+      blurSubsBlock(1)
+    }
+    else {
+      $(this).attr("data-status", "false")
+      blurSubsBlock(0)
+    }
+  });
+
+
+  function blurSubsBlock(statusBlur) {
+    let parentWindow = window.parent || window.top;
+    if (parentWindow) {
+      parentWindow.postMessage(
+        {
+          method: "blur_subblock",
+          value: statusBlur,
+        },
+        "*"
+      );
+    }
+  }
+
+
+
+  function initDrag() {
+    // Word Draggable
+    $('.draggable').draggable({ connectWith: '#rhs' })
+
+    // Input word place
+    $('.droppable').droppable({ activeClass: 'active', hoverClass: 'drop-here' })
+
+    // Basket Words
+    $('#lhs').sortable({ connectWith: '.droppable-basket' })
+    $('.droppable-basket').droppable({ activeClass: 'active', hoverClass: 'drop-here' })
+
+
+    // Pre frop event
+    $('.droppable').droppable().on('droppable:drop', function (e, ui) {
+    })
+
+  }
+
+
+  function wordDropEvent(e, ui) {
+    // console.warn("YES")
+    // console.warn(e, ui.item.parent())
+    // currentState[$(ui.item[0]).attr("idx")] = $(ui.item.parent()).attr("idx")
+
+    $.each($(".word-draggable"), function (indexInArray, valueOfElement) {
+      currentState[$(valueOfElement).attr("idx")] = $(valueOfElement).parent().attr("idx")
+    });
+
+
+    if (ui.item.parent().hasClass("droptarget_in")) {
+      $(ui.item.parent()).css({
+        "border-bottom": "0px",
+      })
+    }
+    else {
+      $(".droptarget_in:not(:has(>span))").css({
+        "border-bottom": "3px solid silver",
+      })
+    }
+    checkPhrase()
+
+  }
+
+
+  function checkPhrase() {
+    if ($(".droptarget_in").length == $(".droptarget_in").children().length) {
+      var count_error = 0
+      var correct_element = ""
+
+      for (var [key, value] of input_words) {
+        answer_element = $('#droptarget-' + key + '')
+        answer_element = answer_element.find("span");
+        answer = answer_element.text().replace(/\s/g, '')
+
+        // Отмечаем, что верно, а что нет
+        if (answer === value) {
+          correct_element = answer
+          answer_element.css({
+            "color": "rgb(70, 201, 157)",
+          })
+        }
+        else {
+          answer_element.css({
+            "color": "red",
+          })
+          count_error++
+        }
+      }
+
+      var status = (count_error === 0) ? 1 : 0
+      var collected_phrase = $('.block-text').text()
+
+    }
+    else {
+      $(".text-paste").css("color", "#ffd700")
+    }
+
+  }
+
+  /* Event MouseOver */
+  let cont_paste_word = document.getElementById("cont")
+  cont_paste_word.addEventListener("mouseenter", function (event) {
+    // console.log("mouseenter")
+    status = false
+  });
+  cont_paste_word.addEventListener("mouseleave", function (event) {
+    // console.log("mouseenter")
+    status = true
+  });
+</script>

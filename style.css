@@ -1,0 +1,114 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800;900&display=swap"); */
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+  /* font-family: "Poppins", sans-serif; */
+  font-size: 16px;
+}
+
+body {
+  padding: 30px;
+  padding-top: 14px;
+  min-height: 100%;
+  background: rgb(21, 19, 27);
+  color: #fff;
+  overflow: hidden;
+  /* width: 700px; */
+}
+
+a {
+  -webkit-touch-callout: none
+}
+
+.droptarget {
+  display: inline-block;
+}
+
+.word_set {
+  /* width: 100%;
+  height: 32px;
+  font-size: 16px;
+  border: 2px solid silver;
+  border-radius: 5px; */
+  width: 100%;
+  height: 32px;
+  font-size: 16px;
+  border: 1.8px solid #c0c0c0cf;
+  border-radius: 48px;
+}
+
+.droptarget_in {
+  min-width: 30px;
+  height: 25px;
+  margin-bottom: -7px;
+  border: 0px solid silver;
+  border-bottom: 3px solid silver;
+  text-align: center;
+  border-radius: 3px;
+}
+
+.text-paste {
+  color: #ffd700;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-bottom: 0px;
+  text-align: center;
+  /* padding: -10px; */
+}
+
+.block-text {
+  display: block;
+  padding-bottom: 15px;
+}
+
+.container {
+  font-size: 40px;
+  text-align: center;
+  /* padding: 50px; */
+}
+
+.block_words {
+  /* border: 3px solid rgba(197, 197, 197, 0.541); */
+  /* Белая рамка */
+  border-radius: 10px;
+}
+
+
+h4 {
+  font-size: 30px;
+  font-weight: 400;
+}
+
+
+.noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Old versions of Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.switch-block {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.switch-block p {
+  font-size: 12px;
+}
+
+.switcher {
+  margin-top: 0;
+  margin-left: 5px;
+}
